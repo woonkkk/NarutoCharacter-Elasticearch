@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Search Engine</title>
+  </head>
+
+  <body>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/ss.css') }}" >
+    <header>
+      <a href="https://www.ict.mahidol.ac.th" target="_blank">
+        <img src="./static/img/logoict.png" alt="ICT logo" width="70"> 
+      </a>
+      <div class="header-links">
+        <a href="#members">Members</a>
+        <a href="#search">Search</a>
+      </div>
+    </header>
+
+    <section class="cover">
+      <div class="content">
+        <div class="text">
+          <h2> SEARCH SYSTEM <br> FOR NARUTO CHARACTER INFORMATION</h2>
+          Welcome to our Character Search System! 
+          Our intuitive search allows you to discover characters based on their names, 
+          affiliations, backgrounds, abilities, and appearances. 
+          <br>Powered by Elasticsearch, our system ensures quick and relevant results. 
+          Embark on a Journey: Explore the World of Naruto Characters with Our Powerful Search System!
+        </div>
+        <div class="search">
+          <form method="GET" action="{{ url_for('search') }}" class="searchbox">
+            <label for="search"><b>Start Search</b></label>
+            <input type="text" name="keyword" placeholder="Search here!" value="{{ keyword }}">
+            <button type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+      <a target="_blank" href="https://i.pinimg.com/564x/50/d4/90/50d490318e5b6f5301ede3353947b83d.jpg">
+        <img src="./static/img/1.jpg" class="right-content">
+      </a>
+      
+    </section>
+    <article class="gallerycontainer">
+      <div class="gallery">
+        <a target="_blank" href="https://i.pinimg.com/originals/96/b0/27/96b027148333068aca64c76f5ce06afd.gif">
+          <img src="https://i.pinimg.com/originals/96/b0/27/96b027148333068aca64c76f5ce06afd.gif">
+        </a>
+      </div>    
+      <div class="gallery">
+        <a target="_blank" href="https://i.pinimg.com/originals/5e/72/fa/5e72fa017550dcfbe6f54163b0e3491f.gif">
+          <img src="https://i.pinimg.com/originals/5e/72/fa/5e72fa017550dcfbe6f54163b0e3491f.gif" >
+        </a>
+      </div>      
+      <div class="gallery">
+        <a target="_blank" href="ihttps://i.pinimg.com/originals/15/72/03/157203107a42783c35af5930762b0ed7.gif">
+          <img src="https://i.pinimg.com/originals/15/72/03/157203107a42783c35af5930762b0ed7.gif">
+        </a>
+      </div> 
+      <div class="gallery">
+        <a target="_blank" href="https://i.pinimg.com/originals/3c/3f/67/3c3f675a55e0b607bf591865f0f2694e.gif">
+          <img src="https://i.pinimg.com/originals/3c/3f/67/3c3f675a55e0b607bf591865f0f2694e.gif" >
+        </a>
+      </div>
+    </article>
+
+    <section>
+          {% if hits %}
+          <div class="search-result"> <h3> Search Results </h3> </div>
+              <div class="container">
+                    {% for doc in hits %}
+                    <div class="content-box">
+                        <h3> {{ doc['character_name'] }} </h3>
+                        <img class="charactor-pic" src="{{ doc['character_pic'] }}" alt="{{ doc['character_name'] }}"><br>
+                        <section class="dummy_text" > {{ doc['description'] }} </section>
+                        <span id="more{{ loop.index }}" style="display: none;">
+                          {% if doc['affiliation'] %}
+                            <ul> Affiliation: {{ doc['affiliation'] }}</ul>
+                          {% endif %}
+                          {% if doc['background'] %}
+                            <ul> Background: {{ doc['background'] }}</ul>
+                          {% endif %}
+                          {% if doc['ability'] %}
+                            <ul> Ability: {{ doc['ability'] }}</ul>
+                          {% endif %}
+                          {% if doc['appearance'] %}
+                            <ul> Appearance: {{ doc['appearance'] }}</ul>
+                          {% endif %}
+                        </span>
+                        <br>
+                        <button class="readmorebtn" onclick="myFunction({{ loop.index }})" id="myBtn{{ loop.index }}">Read more</button>
+                    </div>
+                    {% endfor %}
+              </div>
+              <script>
+                function myFunction(index) {
+
+                  var moreText = document.getElementById("more" + index);
+                  var btnText = document.getElementById("myBtn" + index);
+                
+                  if (moreText.style.display === "none") {
+                    moreText.style.display = "inline";
+                    btnText.innerHTML = "Read less";
+                  } else {
+                    moreText.style.display = "none";
+                    btnText.innerHTML = "Read more";
+                  }
+                }           
+              </script>
+
+              <nav aria-label="Page navigation">
+                <ul >
+                  {% if page_no != 1 %}
+                    <li><a class="page-link" href="?keyword={{ keyword }}&page=1">First</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="?keyword={{ keyword }}&page={{ page_no-1 }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <li ><a class="page-link" href="?keyword={{ keyword }}&page={{ page_no-1 }}">{{ page_no-1 }}</a></li>
+                  {% endif %}
+                  {% if page_total != 1 %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ page_no }}</a></li>
+                  {% endif %}
+                  {% if page_no < page_total %}
+                    <li ><a class="page-link" href="?keyword={{ keyword }}&page={{ page_no+1 }}">{{ page_no+1 }}</a></li>
+                    <li >
+                      <a class="page-link" href="?keyword={{ keyword }}&page={{ page_no+1 }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                    <li ><a class="page-link" href="?keyword={{ keyword }}&page={{ page_total }}">Last</a></li>
+                  {% endif %}
+                </ul>
+              </nav>
+
+          {% endif %}
+    </section>
+    <hr>
+    <section id="members">
+      <div class="member-box">
+        <img class="member-photo" src="./static/img/fay.jpg" alt="Member 1">
+        <p class="member-details">Miss Russarin Eaimrittikrai</p>
+        <p>6488021</p>
+      </div>
+      <div class="member-box">
+        <img class="member-photo" src="./static/img/pub.jpg" alt="Member 2">
+        <p class="member-details">Miss Supithcha Jongphoemwatthanaphon</p>
+        <p>6488045</p>
+      </div>
+      <div class="member-box">
+        <img class="member-photo" src="./static/img/woon.jpg" alt="Member 3">
+        <p class="member-details">Miss Kanita Karunkittikun</p>
+        <p>6488049</p>
+      </div>
+    </section>
+    
+  </body>
+  <footer>
+    <br><br>ITCS414 Information Storage and Retrieval<br><br>
+  </footer>
+</html>
